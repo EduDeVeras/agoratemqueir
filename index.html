@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Momentum - Cuidado Pessoal</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header>
+        <h1>Momentum</h1>
+    </header>
+
+    <main>
+        <h2>Olá, Carlos!</h2>
+        <p class="subtitulo">Este é o seu resumo de saúde de hoje.</p>
+
+        <div class="card card-destaque" id="card-proximo-remedio">
+            <h3>Próximo Remédio</h3>
+            <p class="remedio-nome">Losartana (50mg)</p>
+            <p class="remedio-horario">Hoje às 14:00</p>
+            <button id="btn-tomar-remedio" class="btn btn-principal">Registrar que Tomei</button>
+        </div>
+
+        <div class="card">
+            <h3>Seus Lembretes</h3>
+            <ul id="lista-remedios">
+                <li class="remedio-item concluido">
+                    <span>08:00 - AAS (100mg)</span>
+                    <span>✔️ Concluído</span>
+                </li>
+                <li class="remedio-item pendente" id="item-remedio-14h">
+                    <span>14:00 - Losartana (50mg)</span>
+                    <span>⏳ Pendente</span>
+                </li>
+                <li class="remedio-item pendente">
+                    <span>20:00 - Dipirona (30 gotas)</span>
+                    <span>⏳ Pendente</span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="card-simulacao">
+            <button id="btn-simular-atraso" class="btn">Simular Notificação de Atraso</button>
+        </div>
+
+    </main>
+
+    <button id="sos-button" class="sos-btn">
+        <span class="sos-icon">🚨</span>
+        <span class="sos-text">SOS</span>
+    </button>
+
+    <div id="overlay" class="hidden"></div>
+
+    <div id="modal-atraso" class="modal hidden">
+        <div class="modal-header-atraso">
+            <h2>⚠️ REMÉDIO ATRASADO!</h2>
+        </div>
+        <div class="modal-body">
+            <p>Você ainda não registrou o seu "Dipirona (30 gotas)" das 20:00.</p>
+            <button id="btn-tomei-agora" class="btn btn-principal">Tomei Agora</button>
+            <button id="btn-fechar-modal-atraso" class="btn btn-secundario">Fechar</button>
+        </div>
+    </div>
+
+    <div id="modal-sos" class="modal hidden">
+        <div class="modal-header-sos">
+            <h2>🚨 EMERGÊNCIA 🚨</h2>
+        </div>
+        <div class="modal-body">
+            <p>Ligar para a Ambulância (192) em...</p>
+            <h1 id="contador-sos">5</h1>
+            <p>Pressione "CANCELAR" se foi um engano.</p>
+            <button id="btn-confirmar-sos" class="btn btn-sos-confirmar">LIGAR AGORA</button>
+            <button id="btn-cancelar-sos" class="btn btn-secundario">CANCELAR</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
