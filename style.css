@@ -1,250 +1,133 @@
-/* --- Configurações Globais --- */
-:root {
-    --cor-principal: #00529B; /* Azul "Momentum" */
-    --cor-secundaria: #f4f7f6;
-    --cor-texto: #333;
-    --cor-sucesso: #28a745;
-    --cor-alerta: #ffc107;
-    --cor-perigo: #d90429;
-    --cor-branco: #ffffff;
-}
+/* ... (todo o seu CSS anterior) ... */
 
-body {
-    font-family: 'Roboto', sans-serif;
-    margin: 0;
-    padding: 0 0 100px 0; /* Espaço no fundo para o botão SOS */
-    background-color: var(--cor-secundaria);
-    color: var(--cor-texto);
-}
-
-/* --- Cabeçalho --- */
-header {
-    background-color: var(--cor-principal);
-    color: var(--cor-branco);
-    padding: 20px;
-    text-align: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-header h1 {
-    margin: 0;
-    font-size: 2.5rem;
-}
-
-/* --- Conteúdo Principal --- */
-main {
-    padding: 20px;
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-main h2 {
-    font-size: 2rem;
-    margin-bottom: 5px;
-}
-
-.subtitulo {
-    font-size: 1.1rem;
-    color: #666;
-    margin-top: 0;
-}
-
-/* --- Cards --- */
-.card {
-    background-color: var(--cor-branco);
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-    padding: 24px;
-    margin-bottom: 20px;
-}
-
-.card-destaque {
-    background-color: var(--cor-principal);
-    color: var(--cor-branco);
-    text-align: center;
-}
-
-.card-destaque h3 {
-    margin-top: 0;
-    font-size: 1.2rem;
-    opacity: 0.9;
-}
-
-.card-destaque .remedio-nome {
-    font-size: 2rem;
-    font-weight: 700;
-    margin: 10px 0;
-}
-
-.card-destaque .remedio-horario {
-    font-size: 1.5rem;
-    margin-bottom: 20px;
-}
-
-/* --- Lista de Remédios --- */
-#lista-remedios {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.remedio-item {
+/* --- Estilos da Tela de Login --- */
+.body-login {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 15px 0;
-    font-size: 1.1rem;
-    border-bottom: 1px solid #eee;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: var(--cor-principal);
 }
 
-.remedio-item:last-child {
-    border-bottom: none;
-}
-
-.remedio-item.concluido {
-    color: #888;
-    text-decoration: line-through;
-}
-
-.remedio-item span:last-child {
-    font-weight: 700;
-}
-
-.remedio-item.concluido span:last-child {
-    color: var(--cor-sucesso);
-}
-
-/* --- Botões --- */
-.btn {
-    font-family: 'Roboto', sans-serif;
-    padding: 15px 25px;
-    font-size: 1.1rem;
-    font-weight: 700;
-    border: none;
-    border-radius: 30px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    width: 100%;
-    margin-top: 10px;
-}
-
-.btn-principal {
+.login-container {
     background-color: var(--cor-branco);
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.login-container h1 {
     color: var(--cor-principal);
+    font-size: 3rem;
+    margin: 0;
 }
 
-.btn-principal:hover {
-    background-color: #f0f0f0;
+.login-container p {
+    font-size: 1.2rem;
+    color: #666;
+    margin-bottom: 30px;
 }
 
-.btn-secundario {
-    background-color: #eee;
+/* --- Grupos de Formulário --- */
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 700;
     color: #555;
 }
 
-/* --- Botão SOS --- */
-.sos-btn {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: var(--cor-perigo);
+.form-group input[type="text"],
+.form-group input[type="time"] {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-sizing: border-box; /* Importante para o padding não quebrar o layout */
+}
+
+/* --- Menu de Navegação --- */
+.main-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f4f4f4;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    position: relative;
+}
+
+.main-nav a {
+    padding: 10px 20px;
+    text-decoration: none;
+    color: var(--cor-principal);
+    font-weight: 700;
+    font-size: 1.1rem;
+    border-radius: 20px;
+}
+
+.main-nav a.nav-active {
+    background-color: var(--cor-principal);
+    color: var(--cor-branco);
+}
+
+.btn-logout {
+    position: absolute;
+    right: 20px;
+    background: var(--cor-perigo);
     color: var(--cor-branco);
     border: none;
-    border-radius: 40px;
-    padding: 15px 30px;
+    padding: 8px 15px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+/* --- Lista de Remédios Cadastrados --- */
+#lista-remedios-cadastrados .remedio-item,
+#lista-remedios-hoje .remedio-item {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    line-height: 1.4;
+}
+#lista-remedios-cadastrados .remedio-item:last-child,
+#lista-remedios-hoje .remedio-item:last-child {
+    border-bottom: none;
+}
+
+#lista-remedios-cadastrados .remedio-info {
+    font-size: 1.1rem;
+}
+
+#lista-remedios-cadastrados .remedio-info strong {
+    font-size: 1.2rem;
+    color: var(--cor-texto);
+}
+
+#lista-remedios-cadastrados .remedio-horario {
     font-size: 1.5rem;
     font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    cursor: pointer;
-    z-index: 100;
+    color: var(--cor-principal);
+    margin-right: 15px;
 }
 
-.sos-btn .sos-icon {
-    font-size: 1.8rem;
-}
-
-/* --- Modais (Pop-ups) --- */
-.hidden {
-    display: none !important;
-}
-
-#overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    z-index: 200;
-}
-
-.modal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: var(--cor-branco);
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    z-index: 201;
-    width: 90%;
-    max-width: 400px;
-    overflow: hidden; /* Para os headers coloridos */
-    text-align: center;
-}
-
-.modal-header-atraso {
-    background-color: var(--cor-alerta);
-    color: var(--cor-texto);
-    padding: 15px;
-}
-
-.modal-header-sos {
+.btn-remover {
     background-color: var(--cor-perigo);
-    color: var(--cor-branco);
-    padding: 15px;
-}
-
-.modal h2 {
-    margin: 0;
-    font-size: 1.5rem;
-}
-
-.modal-body {
-    padding: 25px;
-}
-
-.modal-body p {
-    font-size: 1.1rem;
-    line-height: 1.5;
-    margin-bottom: 20px;
-}
-
-.modal-body h1 {
-    font-size: 4rem;
-    color: var(--cor-perigo);
-    margin: 10px 0;
-}
-
-.btn-sos-confirmar {
-    background-color: var(--cor-perigo);
-    color: var(--cor-branco);
-}
-
-/* --- Simulação (Demo) --- */
-.card-simulacao {
-    margin-top: 30px;
-    padding: 15px;
-    background-color: #ddd;
-    border-radius: 10px;
-    text-align: center;
-}
-.card-simulacao .btn {
-    background-color: #666;
     color: white;
-    width: auto;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
 }
