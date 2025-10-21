@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Momentum - Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header>
+        <h1>Momentum</h1>
+    </header>
+
+    <nav class="main-nav">
+        <a href="dashboard.html" class="nav-active">Início</a>
+        <a href="cadastro.html">Meus Remédios</a>
+        <button id="btn-logout" class="btn-logout">Sair</button>
+    </nav>
+
+    <main>
+        <h2 id="welcome-message">Olá, [Nome]!</h2>
+        <p class="subtitulo">Este é o seu resumo de saúde de hoje.</p>
+
+        <div class="card card-destaque" id="card-proximo-remedio">
+            </div>
+
+        <div class="card">
+            <h3>Seus Lembretes de Hoje</h3>
+            <ul id="lista-remedios-hoje">
+                </ul>
+        </div>
+    </main>
+
+    <button id="sos-button" class="sos-btn">
+        <span class="sos-icon">🚨</span>
+        <span class="sos-text">SOS</span>
+    </button>
+    
+    <div id="overlay" class="hidden"></div>
+    <div id="modal-sos" class="modal hidden">
+        <div class="modal-header-sos"><h2>🚨 EMERGÊNCIA 🚨</h2></div>
+        <div class="modal-body">
+            <p>Ligar para a Ambulância (192) em...</p>
+            <h1 id="contador-sos">5</h1>
+            <p>Pressione "CANCELAR" se foi um engano.</p>
+            <button id="btn-confirmar-sos" class="btn btn-sos-confirmar">LIGAR AGORA</button>
+            <button id="btn-cancelar-sos" class="btn btn-secundario">CANCELAR</button>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
