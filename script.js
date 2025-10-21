@@ -1,128 +1,283 @@
-// Espera o DOM carregar antes de executar o script
+// Aguarda o DOM carregar
 document.addEventListener("DOMContentLoaded", () => {
+    
+    // --- LÓGICA DE AUTENTICAÇÃO E ROTEAMENTO ---
 
-    // --- Seleção de Elementos do DOM ---
-    const sosButton = document.getElementById("sos-button");
-    const overlay = document.getElementById("overlay");
-    
-    // Modal SOS
-    const modalSOS = document.getElementById("modal-sos");
-    const contadorSOS = document.getElementById("contador-sos");
-    const btnConfirmarSOS = document.getElementById("btn-confirmar-sos");
-    const btnCancelarSOS = document.getElementById("btn-cancelar-sos");
-    
-    // Modal Atraso
-    const modalAtraso = document.getElementById("modal-atraso");
-    const btnSimularAtraso = document.getElementById("btn-simular-atraso");
-    const btnTomeiAgora = document.getElementById("btn-tomei-agora");
-    const btnFecharModalAtraso = document.getElementById("btn-fechar-modal-atraso");
-    
-    // Funcionalidade Principal
-    const btnTomarRemedio = document.getElementById("btn-tomar-remedio");
-    const cardProximoRemedio = document.getElementById("card-proximo-remedio");
-    const itemRemedio14h = document.getElementById("item-remedio-14h");
+    const paginaAtual = window.location.pathname.split('/').pop();
+    const usuarioLogado = localStorage.getItem('momentumUser');
 
-    // Variáveis de estado
-    let countdownInterval; // Armazena o intervalo do contador SOS
-    let tempoRestante;
-
-    // --- Funções dos Modais ---
+    // Se não estiver logado E não estiver na página de login, redireciona para o login
+    if (!usuarioLogado && paginaAtual !== 'index.html' && paginaAtual !== '') {
+        window.location.href = 'index.html';
+        return; // Para o script
+    }
     
-    function abrirModal(modal) {
-        overlay.classList.remove("hidden");
-        modal.classList.remove("hidden");
+    // Se estiver logado E estiver na página de login, redireciona para o dashboard
+    if (usuarioLogado && (paginaAtual === 'index.html' || paginaAtual === '')) {
+        window.location.href = 'dashboard.html';
+        return; // Para o script
     }
 
-    function fecharModais() {
-        overlay.classList.add("hidden");
-        modalSOS.classList.add("hidden");
-        modalAtraso.classList.add("hidden");
-        // Para o contador SOS se ele estiver ativo
-        clearInterval(countdownInterval);
+    // --- LÓGICA GERAL (presente em todas as páginas logadas) ---
+    
+    const btnLogout = document.getElementById('btn-logout');
+    if (btnLogout) {
+        btnLogout.addEventListener('click', fazerLogout);
+    }
+    
+    function fazerLogout() {
+        localStorage.removeItem('momentumUser');
+        localStorage.removeItem('momentumRemedies'); // Limpa tudo
+        window.location.href = 'index.html';
     }
 
-    // --- Lógica do SOS ---
+    // --- LÓGICA DA TELA DE LOGIN (index.html) ---
+    if (paginaAtual === 'index.html' || paginaAtual === '') {
+        const loginForm = document.getElementById('login-form');
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            localStorage.setItem('momentumUser', username);
+            window.location.href = 'dashboard.html';
+        });
+    }
 
-    function iniciarContadorSOS() {
-        tempoRestante = 5;
-        contadorSOS.textContent = tempoRestante;
+    // --- LÓGICA DA TELA DE CADASTRO (cadastro.html) ---
+    if (paginaAtual === 'cadastro.html') {
+        const formCadastro = document.getElementById('form-cadastro-remedio');
+        const listaCadastrados = document.getElementById('lista-remedios-cadastrados');
+        
+        carregarRemediosCadastrados();
 
-        countdownInterval = setInterval(() => {
-            tempoRestante--;
-            contadorSOS.textContent = tempoRestante;
+        formCadastro.addEventListener('submit', (e) => {
+            e.preventDefault();
+            salvarRemedio();
+            formCadastro.reset(); // Limpa o formulário
+        });
+
+        function getRemedios() {
+            return JSON.parse(localStorage.getItem('momentumRemedies')) || [];
+        }
+
+        function salvarRemedio() {
+            const remedios = getRemedios();
             
-            if (tempoRestante <= 0) {
-                clearInterval(countdownInterval);
-                realizarLigacaoSOS();
+            const novoRemedio = {
+                id: Date.now(), // ID único baseado no tempo
+                nome: document.getElementById('remedio-nome').value,
+                dosagem: document.getElementById('remedio-dosagem').value,
+                horario: document.getElementById('remedio-horario').value,
+                concluido: false // Novo estado
+            };
+
+            remedios.push(novoRemedio);
+            // Ordena os remédios por horário
+            remedios.sort((a, b) => a.horario.localeCompare(b.horario));
+            
+            localStorage.setItem('momentumRemedies', JSON.stringify(remedios));
+            carregarRemediosCadastrados();
+        }
+
+        function carregarRemediosCadastrados() {
+            const remedios = getRemedios();
+            listaCadastrados.innerHTML = ''; // Limpa a lista antes de recarregar
+            
+            if (remedios.length === 0) {
+                listaCadastrados.innerHTML = '<p>Nenhum remédio cadastrado ainda.</p>';
+                return;
             }
-        }, 1000);
+
+            remedios.forEach((remedio) => {
+                const item = document.createElement('li');
+                item.className = 'remedio-item';
+                item.innerHTML = `
+                    <div class="remedio-info">
+                        <span class="remedio-horario">${remedio.horario}</span>
+                        <div>
+                            <strong>${remedio.nome}</strong>
+                            <br>
+                            <span>${remedio.dosagem}</span>
+                        </div>
+                    </div>
+                    <button class="btn-remover" data-id="${remedio.id}">Remover</button>
+                `;
+                listaCadastrados.appendChild(item);
+            });
+
+            // Adiciona listener para todos os botões de remover
+            document.querySelectorAll('.btn-remover').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const idParaRemover = Number(e.target.getAttribute('data-id'));
+                    removerRemedio(idParaRemover);
+                });
+            });
+        }
+
+        function removerRemedio(id) {
+            let remedios = getRemedios();
+            remedios = remedios.filter(r => r.id !== id);
+            localStorage.setItem('momentumRemedies', JSON.stringify(remedios));
+            carregarRemediosCadastrados();
+        }
     }
 
-    function realizarLigacaoSOS() {
-        // Esta é a ação real de ligar.
-        // Em um celular, isso abriria o discador.
-        // window.location.href = "tel:192";
+    // --- LÓGICA DO DASHBOARD (dashboard.html) ---
+    if (paginaAtual === 'dashboard.html') {
+        const welcomeMessage = document.getElementById('welcome-message');
+        const cardProximo = document.getElementById('card-proximo-remedio');
+        const listaHoje = document.getElementById('lista-remedios-hoje');
         
-        // Para fins de demonstração no navegador, usamos um alerta:
-        alert("Simulação: Ligando para 192 (Ambulância)...");
-        console.log("Ligação de emergência acionada para 192.");
-        fecharModais();
+        // Personaliza a saudação
+        welcomeMessage.textContent = `Olá, ${usuarioLogado}!`;
+
+        carregarDashboard();
+
+        function getRemedios() {
+            return JSON.parse(localStorage.getItem('momentumRemedies')) || [];
+        }
+        
+        function carregarDashboard() {
+            const remedios = getRemedios();
+            const agora = new Date();
+            const horaAtual = agora.toTimeString().substring(0, 5); // Formato "HH:MM"
+
+            // Reseta o estado 'concluido' de todos os remédios todo dia (meia-noite)
+            // (Esta é uma lógica simplificada)
+            
+            // Filtra remédios pendentes de hoje
+            const pendentes = remedios
+                .filter(r => !r.concluido && r.horario >= horaAtual)
+                .sort((a, b) => a.horario.localeCompare(b.horario));
+            
+            const concluidos = remedios
+                .filter(r => r.concluido || r.horario < horaAtual);
+
+            // 1. Preenche o Card de Próximo Remédio
+            if (pendentes.length > 0) {
+                const proximo = pendentes[0];
+                cardProximo.innerHTML = `
+                    <h3>Próximo Remédio</h3>
+                    <p class="remedio-nome">${proximo.nome} (${proximo.dosagem})</p>
+                    <p class="remedio-horario">Hoje às ${proximo.horario}</p>
+                    <button class="btn btn-principal btn-tomar" data-id="${proximo.id}">Registrar que Tomei</button>
+                `;
+                
+                // Adiciona listener ao botão
+                cardProximo.querySelector('.btn-tomar').addEventListener('click', (e) => {
+                    const idParaConcluir = Number(e.target.getAttribute('data-id'));
+                    marcarComoTornado(idParaConcluir);
+                });
+
+            } else {
+                cardProximo.innerHTML = `
+                    <h3>Parabéns, ${usuarioLogado}!</h3>
+                    <p class="remedio-nome">Você concluiu todos os seus remédios por hoje.</p>
+                    <p class="remedio-horario">🎉</p>
+                `;
+            }
+
+            // 2. Preenche a Lista de Lembretes do Dia
+            listaHoje.innerHTML = '';
+            
+            if (remedios.length === 0) {
+                 listaHoje.innerHTML = '<li>Nenhum remédio cadastrado. Adicione em "Meus Remédios".</li>';
+                 return;
+            }
+
+            // Adiciona os concluídos
+            concluidos.forEach(r => {
+                listaHoje.innerHTML += `
+                    <li class="remedio-item concluido">
+                        <span>${r.horario} - ${r.nome}</span>
+                        <span>✔️ Concluído</span>
+                    </li>
+                `;
+            });
+
+            // Adiciona os pendentes (exceto o primeiro, que já está no card)
+            pendentes.slice(1).forEach(r => {
+                listaHoje.innerHTML += `
+                    <li class="remedio-item pendente">
+                        <span>${r.horario} - ${r.nome}</span>
+                        <span>⏳ Pendente</span>
+                    </li>
+                `;
+            });
+        }
+        
+        function marcarComoTornado(id) {
+            let remedios = getRemedios();
+            const remedio = remedios.find(r => r.id === id);
+            
+            if (remedio) {
+                // Em um app real, marcaríamos como "concluído" para o dia atual.
+                // Para simplificar, vamos movê-lo para o fim da lista (ou marcar como concluído)
+                remedio.concluido = true; 
+                // A lógica para "resetar" isso no dia seguinte é mais complexa.
+                // Por enquanto, isso funciona para o dia.
+                
+                // NOTA: Para uma simulação simples, vamos "remover" o remédio
+                // dos pendentes. A forma mais simples é só recarregar o dashboard.
+                
+                // A forma correta:
+                remedios = remedios.map(r => (r.id === id) ? { ...r, concluido: true } : r);
+                localStorage.setItem('momentumRemedies', JSON.stringify(remedios));
+                
+                // Recarrega o dashboard
+                carregarDashboard();
+            }
+        }
+
+        // Lógica do SOS (copiada de antes)
+        const sosButton = document.getElementById("sos-button");
+        const overlay = document.getElementById("overlay");
+        const modalSOS = document.getElementById("modal-sos");
+        const contadorSOS = document.getElementById("contador-sos");
+        const btnConfirmarSOS = document.getElementById("btn-confirmar-sos");
+        const btnCancelarSOS = document.getElementById("btn-cancelar-sos");
+        let countdownInterval;
+
+        function abrirModal(modal) {
+            overlay.classList.remove("hidden");
+            modal.classList.remove("hidden");
+        }
+
+        function fecharModais() {
+            overlay.classList.add("hidden");
+            modalSOS.classList.add("hidden");
+            clearInterval(countdownInterval);
+        }
+
+        function iniciarContadorSOS() {
+            let tempoRestante = 5;
+            contadorSOS.textContent = tempoRestante;
+            countdownInterval = setInterval(() => {
+                tempoRestante--;
+                contadorSOS.textContent = tempoRestante;
+                if (tempoRestante <= 0) {
+                    clearInterval(countdownInterval);
+                    realizarLigacaoSOS();
+                }
+            }, 1000);
+        }
+
+        function realizarLigacaoSOS() {
+            alert("Simulação: Ligando para 192 (Ambulância)...");
+            console.log("Ligação de emergência acionada para 192.");
+            fecharModais();
+            // window.location.href = "tel:192"; // Código real
+        }
+
+        sosButton.addEventListener("click", () => {
+            abrirModal(modalSOS);
+            iniciarContadorSOS();
+        });
+        btnCancelarSOS.addEventListener("click", fecharModais);
+        btnConfirmarSOS.addEventListener("click", () => {
+            clearInterval(countdownInterval);
+            realizarLigacaoSOS();
+        });
+        overlay.addEventListener("click", fecharModais);
     }
 
-    // --- Lógica dos Remédios ---
-
-    function confirmarRemedio() {
-        // Marca o item da lista como concluído
-        itemRemedio14h.classList.remove("pendente");
-        itemRemedio14h.classList.add("concluido");
-        itemRemedio14h.innerHTML = `
-            <span>14:00 - Losartana (50mg)</span>
-            <span>✔️ Concluído</span>
-        `;
-        
-        // Atualiza o card principal
-        cardProximoRemedio.innerHTML = `
-            <h3>Próximo Remédio</h3>
-            <p class="remedio-nome">Dipirona (30 gotas)</p>
-            <p class="remedio-horario">Hoje às 20:00</p>
-            <button id="btn-tomar-remedio-2" class="btn btn-principal">Registrar que Tomei</button>
-        `;
-        
-        // (Em um app real, o novo botão também precisaria de um listener)
-    }
-
-    // --- Event Listeners (Onde a mágica acontece) ---
-
-    // SOS
-    sosButton.addEventListener("click", () => {
-        abrirModal(modalSOS);
-        iniciarContadorSOS();
-    });
-
-    btnCancelarSOS.addEventListener("click", fecharModais);
-    btnConfirmarSOS.addEventListener("click", () => {
-        clearInterval(countdownInterval); // Para a contagem e liga imediatamente
-        realizarLigacaoSOS();
-    });
-
-    // Notificação de Atraso (Simulação)
-    btnSimularAtraso.addEventListener("click", () => {
-        abrirModal(modalAtraso);
-    });
-
-    btnTomeiAgora.addEventListener("click", () => {
-        alert("Remédio registrado. Ótimo trabalho!");
-        fecharModais();
-        // Aqui você adicionaria a lógica para marcar o remédio das 20h como tomado.
-    });
-    
-    btnFecharModalAtraso.addEventListener("click", fecharModais);
-
-    // Overlay (clicar fora do modal fecha)
-    overlay.addEventListener("click", fecharModais);
-
-    // Lógica Principal
-    btnTomarRemedio.addEventListener("click", () => {
-        confirmarRemedio();
-    });
 });
